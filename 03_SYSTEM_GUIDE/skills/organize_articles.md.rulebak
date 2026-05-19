@@ -1,0 +1,84 @@
+# Skill: Organize Articles
+
+This skill standardizes the command family:
+- “整理文章”
+- “整理新文章”
+- “处理未整理笔记”
+- “更新索引”
+
+Use this skill to minimize agent interpretation drift.
+
+---
+
+## 1. Trigger
+
+Run this skill when the user intent is to:
+- process newly added notes
+- route notes into `/00_RAW/<category>/`
+- refresh summary/index and log the action
+- repair path consistency after moves
+
+---
+
+## 2. Fixed Execution Order
+
+1. Discover candidates
+- scan vault root for note files (except `/README.md` and `/README_HUMAN.md`)
+- scan `/00_RAW` for uncataloged notes
+
+2. Route and move
+- assign exactly one category folder under `/00_RAW`
+- move source notes to the target category
+
+3. Summarize
+- create or update summary files in `/02_SUMMARY`
+- ensure each summary has `## 相关文章`
+
+4. Update retrieval layer & System Log
+- update `/01_INDEX/master_index.md`
+- keep `master_index` in quick-index mode: `## Processed Notes` + `## Summary Files` as primary retrieval map
+- append action log to `/01_INDEX/system_log.md` (e.g. `## [YYYY-MM-DD HH:MM] ingest | Article Name`)
+- update related path references across generated notes
+
+5. Update human entry
+- update `README_HUMAN.md` section: `## 文章更新目录（最新在前）`
+- use fixed line format: `- YYYY-MM-DD｜[[relative/path.ext]]` (`.md` or `.canvas`)
+
+6. Validate integrity
+- run: `bash ./03_SYSTEM_GUIDE/tools/validate_organize_articles.sh`
+
+---
+
+## 3. Definition Of Done
+
+A run is complete only when:
+- no newly added note files remain in vault root (except `README` files)
+- every new processed note has a summary entry
+- `master_index` processed rows point to existing files
+- retrieval can stop at summary-level using `master_index` -> `/02_SUMMARY` mapping
+- `README_HUMAN` contains links to newly processed source notes
+- moved paths are reflected in index/summary files
+- integrity validation returns success
+
+---
+
+## 4. Idempotency Rules
+
+Repeated runs must:
+- not duplicate `README_HUMAN` directory lines
+- not duplicate summary files for the same source
+- not reinsert identical index rows
+- not rewrite unrelated files
+
+When uncertain:
+- prefer update-in-place
+- avoid destructive operations
+
+---
+
+## 5. Non-goals
+
+Do NOT:
+- rewrite original source note content unless requested
+- force deep folder taxonomy
+- treat formatting perfection as higher priority than consistency and retrievability

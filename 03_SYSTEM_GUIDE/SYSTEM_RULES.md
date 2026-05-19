@@ -1,0 +1,721 @@
+﻿# SYSTEM RULES
+
+This file defines how the AI agent should operate this knowledge system.
+
+This is NOT a description.
+This is a behavioral contract.
+
+---
+
+# 0. System Identity
+
+This vault is a human + AI knowledge operating system.
+
+- Human = low-friction input
+- AI = structure, retrieval, summarization, linking, prioritization, refinement
+
+The purpose of the system is NOT to create perfect folders.
+The purpose is to create a long-term, searchable, recoverable, evolving knowledge system.
+
+Do NOT treat this vault as a static archive.
+Do NOT treat this vault as a generic file tree.
+
+---
+
+# 1. Architectural Separation
+
+This system has two major layers:
+
+## 1.1 Knowledge Layer
+This contains the user's actual content, notes, summaries, projects, and long-term knowledge.
+
+Examples:
+- `/00_RAW`
+- `/01_INDEX`
+- `/02_SUMMARY`
+
+## 1.2 Agent Behavior Layer
+This contains the rules, guidance, workflows, and usage recovery logic that govern how the AI should operate.
+
+Examples:
+- `/README.md`
+- `/03_SYSTEM_GUIDE/README.md`
+- `/03_SYSTEM_GUIDE/SYSTEM_RULES.md`
+- `/03_SYSTEM_GUIDE/capabilities.md`
+- `/03_SYSTEM_GUIDE/workflows.md`
+- `/03_SYSTEM_GUIDE/Design Principles.md`
+- `/03_SYSTEM_GUIDE/Quick Commands.md`
+- `/03_SYSTEM_GUIDE/skills/organize_articles.md`
+
+Rule:
+- Do NOT mix knowledge content with behavior rules unnecessarily.
+- Do NOT store operational instructions inside normal knowledge notes unless explicitly intended.
+
+---
+
+# 2. Core Folder Roles
+
+The system is layered:
+
+- `/00_RAW` → unified source-note pool (new notes + processed notes)
+- `/` (vault root, excluding `/README.md`) → may contain newly added unprocessed notes
+- `/01_INDEX` → metadata, master index, system log
+- `/02_SUMMARY` → compressed representations of notes
+- `/03_SYSTEM_GUIDE` → system operating manual and behavioral rules
+
+Complexity belongs to:
+- indexes
+- summaries
+- metadata
+- system log
+
+Complexity does NOT belong to:
+- deep folder nesting
+- rigid manual classification
+- fragile directory logic
+
+`/00_RAW` organization rule:
+- allow one-level category subfolders under `/00_RAW`
+- keep structure shallow (no deep nested taxonomy)
+
+---
+
+# 3. Entry Rule (Critical)
+
+When operating this system:
+
+1. Start from `/README.md` if present
+2. Then read `/03_SYSTEM_GUIDE/README.md`
+3. Then read this file (`SYSTEM_RULES.md`)
+4. If user-facing operation is involved, consult `/README_HUMAN.md` as the human entry page
+5. Do NOT scan the entire vault by default
+
+Use layered access instead.
+
+---
+
+# 4. Memory Model
+
+The system should operate with three memory layers:
+
+## 4.1 Brain (Long-Term Knowledge)
+This is the persistent knowledge layer.
+
+Includes:
+- summaries
+- master index
+- knowledge notes
+- project history
+- processed source material
+
+Purpose:
+- preserve what the user has written, learned, decided, and developed over time
+
+## 4.2 Operational Memory (Short-/Mid-Term Attention)
+This is the current attention layer, maintained purely chronologically.
+
+Includes:
+- `system_log.md` (append-only history of actions)
+
+Purpose:
+- help the agent stay context-aware by reading recent history
+- prevent the agent from acting like it is starting from zero every time
+
+## 4.3 Session Context
+This is the current task or conversation context.
+
+Purpose:
+- handle the immediate request
+- coordinate with long-term knowledge and operational memory
+
+Rule:
+- Do NOT confuse session context with long-term truth.
+- Do NOT confuse short-term focus with permanent classification.
+
+---
+
+# 5. Read-Before-Answer Rule (Critical)
+
+Before answering substantive questions, the agent should consult the system's knowledge layers.
+
+Preferred order:
+
+1. `/01_INDEX/master_index.md` (candidate narrowing + summary mapping)
+2. corresponding files in `/02_SUMMARY`
+3. source notes in `/00_RAW/<category>` only when explicitly requested or summary-level evidence is insufficient
+4. newly added notes in vault root (`/`, excluding `/README.md`) if relevant
+5. uncataloged raw notes only if explicitly necessary
+
+Rule:
+- Do NOT answer from scratch if relevant internal knowledge exists.
+- Do NOT default to memory-only behavior when the vault should be consulted.
+- For normal retrieval tasks, default stop depth is summary-level; do NOT drill into raw notes unless needed.
+
+This system should behave as:
+→ consult brain first, then answer
+
+not:
+→ improvise first, then forget
+
+---
+
+# 6. Write-Back Rule (Critical)
+
+When meaningful new information appears, it should be written back into the system in the appropriate form.
+
+Possible write-back targets include:
+- summary updates
+- index updates
+- system log appends
+- summary-level synthesis refinements
+
+Examples of meaningful new information:
+- new project direction
+- clarified definition
+- correction of an earlier interpretation
+- important strategic shift
+- repeated theme emerging across notes
+- confirmed resolution of an open question
+
+Rule:
+- Valuable new information should not remain trapped only inside a single chat session.
+- The system should compound over time.
+
+---
+
+# 7. Correction Priority Rule
+
+User corrections are high-value signals.
+
+When the user corrects:
+- a factual statement
+- a project status
+- a definition
+- a preference
+- a structural interpretation
+- a priority judgment
+
+the correction should be treated as important update material.
+
+Rule:
+- prioritize updating the relevant summary, index, knowledge note, or operational memory
+- do NOT leave corrections only inside ephemeral dialogue
+- do NOT let outdated interpretations remain dominant if they have been clearly superseded
+
+---
+
+# 8. Note Processing Lifecycle (Critical)
+
+`/00_RAW` is the unified source-note pool.
+Vault root (`/`) may also contain newly added unprocessed notes (excluding `/README.md`).
+
+Status is determined by system artifacts (not by title suffix):
+- processed → summary exists + index entry exists + path is routed into `/00_RAW/<category>/`
+- unprocessed → missing summary/index and/or still waiting for proper routing
+
+Compatibility note:
+- legacy suffixes like `-已处理` may exist historically
+- do NOT require suffix changes for new processing
+
+---
+
+## 8.1 Processing Requirements
+
+For each unprocessed note:
+
+- generate summary → `/02_SUMMARY`
+- extract tags / keywords
+- update `/01_INDEX/master_index.md`
+- append ingest action to `/01_INDEX/system_log.md`
+- detect project linkage if relevant
+- estimate long-term value
+- assign a `/00_RAW` category folder per section 8.7
+- move processed source note to the corresponding `/00_RAW/<category>/` path
+
+Discovery rule:
+- when processing unprocessed notes, check both `/00_RAW` and vault root (`/`, excluding `/README.md`)
+
+---
+
+## 8.2 Completion Condition
+
+A note is considered "processed" when:
+
+- summary exists
+- index entry exists
+- tags are assigned
+- generated notes include source and related-article links per section 8.5
+
+---
+
+## 8.3 Mandatory Routing Update Rule
+
+After processing:
+
+→ move the source note into the corresponding `/00_RAW/<category>/` folder
+→ if source note is in vault root (`/`), move it into `/00_RAW/<category>/` after processing
+→ rewrite impacted links to the new real path
+
+Do NOT leave a completed note outside the `/00_RAW/<category>/` structure.
+
+---
+
+## 8.4 Unprocessed Visibility Rule
+
+During normal retrieval:
+
+→ prioritize notes that already have index + summary
+→ ignore uncataloged raw notes by default
+
+Unless:
+- explicitly requested
+- processing is being performed
+- initialization is underway
+
+---
+
+## 8.5 Related-Article Linking Rule (Critical)
+
+After processing each new note, the system must enforce link-aware write-back for generated notes.
+
+Scope:
+- applies to newly generated notes after summarization (especially in `/02_SUMMARY`)
+
+Mandatory output format:
+- links must be placed at the end of the note
+- section title must be exactly: `## 相关文章`
+
+The `相关文章` section must include:
+- one explicit source link to the original note in `/00_RAW`
+- related note links selected using `/01_INDEX` and `/02_SUMMARY`
+
+Linking behavior:
+- for each newly added note, create bidirectional links with strongly related notes where practical
+- relation selection should prioritize high-relevance links first, then adjacent links
+- avoid noisy over-linking; keep links meaningful and compact
+
+Path rule:
+- generated-note references should point to the current real path of the source note
+- after moving a note, update existing links that reference the old path to the new path
+- link updates apply at least to `/01_INDEX` and `/02_SUMMARY`
+
+---
+
+## 8.6 Orphan Summary Cleanup Rule
+
+If a source note is manually deleted from the vault, its summary in `/02_SUMMARY` must not remain as an orphan.
+
+Detection basis:
+- read the `- Original: ...` path in each summary file
+- if the source path no longer exists, mark that summary as orphan
+
+Cleanup behavior:
+- support batch detection (dry-run) and batch deletion (apply mode)
+- default script path:
+  - `/03_SYSTEM_GUIDE/tools/cleanup_orphan_summaries.sh`
+- command examples:
+  - dry-run: `bash ./03_SYSTEM_GUIDE/tools/cleanup_orphan_summaries.sh --dry-run`
+  - apply: `bash ./03_SYSTEM_GUIDE/tools/cleanup_orphan_summaries.sh --apply`
+
+Rule:
+- orphan summaries should be removed in batch during maintenance runs
+- do not remove summaries whose source still exists
+
+---
+
+## 8.7 RAW Category Routing Rule (Critical)
+
+After a note is processed, route it into exactly one valid category folder under `/00_RAW`.
+
+Valid category folders include:
+- existing one-level subfolders already present under `/00_RAW`
+- any new one-level subfolder manually created by the user under `/00_RAW`
+
+Routing constraints:
+- use one-level classification only (do not create deeper subfolders by default)
+- the agent should discover available category folders from the current `/00_RAW` directory state at runtime
+- user-created one-level folders under `/00_RAW` are immediately valid routing targets and do NOT require manual updates to rule files
+- if category is unclear, use `/00_RAW/鍏跺畠`
+- do not create new category folders automatically unless explicitly approved by user
+- if a note clearly belongs to a different category later, move it and rewrite links to the new path
+
+---
+
+## 8.8 README_HUMAN Maintenance Rule (Critical)
+
+`/README_HUMAN.md` is the mandatory human-readable entry page.
+
+Maintenance triggers:
+- processing new notes
+- moving notes between paths
+- rewriting or repairing links
+- updating indexes or summaries
+
+Required actions:
+- update the section `## 文章更新目录（最新在前）`
+- append latest source-note links at the top (latest-first)
+- use fixed line format: `- YYYY-MM-DD｜[[relative/path.ext]]` (`.md` or `.canvas`)
+
+Consistency constraints:
+- every newly processed article must appear in this directory
+- if a note path changes, update its entry path in this directory
+- do NOT leave `README_HUMAN.md` stale after operational updates
+
+---
+
+## 8.9 "整理文章" Skill Contract (Critical)
+
+When the user asks commands such as:
+- “整理文章”
+- “整理新文章”
+- “处理未整理笔记”
+- “更新索引”
+
+the agent should follow:
+- `/03_SYSTEM_GUIDE/skills/organize_articles.md`
+
+Skill requirements:
+- deterministic step order
+- explicit Definition of Done
+- idempotent behavior (safe on repeated runs)
+- post-run integrity checks
+
+Validation helper:
+- `/03_SYSTEM_GUIDE/tools/validate_organize_articles.sh`
+
+---
+
+## 8.10 Re-processing Rule
+
+Processed articles (with existing summaries and indexes) should generally NOT be processed again via the standard `organize_articles` skill.
+
+However, if a user updates an existing article and explicitly asks to refresh its summary/index, you must use the specific re-organize skill:
+- `/03_SYSTEM_GUIDE/skills/reorganize_article.md`
+
+This skill enforces in-place updates and prevents duplicate files.
+
+---
+
+## 8.11 "修复链接" Skill Contract (Critical)
+
+When the user asks commands such as:
+- “修复链接”
+- “修复 RAW 和 Summary 对应关系”
+- “检查并修复双向链接”
+
+the agent should follow:
+- `/03_SYSTEM_GUIDE/skills/repair_links.md`
+
+Skill boundary:
+- scope is structural integrity only (source-summary mapping, path consistency, bidirectional links)
+- do NOT resolve thesis-level contradictions or final-conclusion conflicts
+
+---
+
+## 8.12 "反思 / 举一反三" Skill Contract (Critical)
+
+When the user asks commands such as:
+- “反思”
+- “举一反三”
+- “从已有概念提出新概念”
+- “基于已有 summary 生成新方向”
+the agent should follow:
+- `/03_SYSTEM_GUIDE/skills/reflect_synthesis.md`
+
+Skill boundary:
+- summary-first and summary-only by default: read `/01_INDEX/master_index.md` + selected `/02_SUMMARY` files
+- do NOT read `/00_RAW` unless user explicitly asks for raw-level verification
+- output should be a new synthesis summary in `/02_SUMMARY`
+- append summary path into `master_index` `## Summary Files`
+- append one `reflect` operation record into `/01_INDEX/system_log.md`
+
+---
+
+# 9. Processing Strategy
+
+When processing notes:
+
+## 9.1 Preserve Original Content
+- Do NOT overwrite original note content unless explicitly requested
+- Do NOT impose unnecessary formatting on original input
+
+## 9.2 Structural Enhancement
+Instead:
+- create summary
+- create metadata
+- create relation hints
+- update retrieval layers
+
+## 9.3 Type Detection
+Infer rough note type where useful:
+- idea
+- knowledge
+- project
+- log
+- question
+
+Do NOT require manual classification before capture.
+
+---
+
+# 10. Retrieval Strategy (Critical)
+
+Do NOT read the whole vault by default.
+
+Use layered retrieval:
+
+1. `/01_INDEX/master_index.md`
+2. `/02_SUMMARY` (read first; default stopping depth)
+3. full notes only if needed and only after summary-level pass
+
+---
+
+## 10.1 Efficiency Principle
+
+Always minimize:
+- token usage
+- unnecessary reads
+- repeated processing
+- noisy retrieval
+
+---
+
+## 10.2 Candidate Narrowing
+
+Before reading full text:
+- identify likely candidates
+- rank them
+- read only the most relevant items first
+
+---
+
+# 11. Index Layer Responsibilities
+
+`/01_INDEX` should maintain the system's machine-usable retrieval layer.
+
+It should include or support:
+- master index
+- system log
+- note status
+- path tracking where useful
+
+Rule:
+- index and summary are primary retrieval interfaces
+- full text is secondary
+
+---
+
+# 12. System Log Rule (Chronological Memory)
+
+Maintain:
+- `system_log.md`
+
+Purpose:
+- Provide an objective, chronological history of AI actions.
+- Improve continuity without guessing subjective focus.
+
+Constraint:
+- Do NOT maintain subjective or brittle "attention state" files. Read recent logs instead.
+
+## 12.1 Storage Contract (Critical)
+
+System history has a single source of truth:
+- `/01_INDEX/system_log.md`
+
+Rules:
+- Append every significant action (ingest, lint, query synthesis, etc.) to the top or bottom of `system_log.md`.
+- Format: `## [YYYY-MM-DD] action_name | Target Name`
+- Do NOT rewrite or overwrite historical entries. It is append-only.
+
+---
+
+# 13. Summary-Centric Knowledge Rule
+
+The system now uses `/02_SUMMARY` as the primary distilled layer.
+
+Rule:
+- keep reusable ideas, synthesis notes, project-status abstractions, and framework-level distillations in summary form
+- avoid creating parallel knowledge/project/archive folders unless explicitly reintroduced by user decision
+
+---
+
+# 14. Synthesis Page Rule (Important)
+
+For important themes, major questions, or long-running projects, prefer a two-layer page structure:
+
+## 14.1 Current Synthesis
+Top section should describe the current best understanding.
+
+Possible contents:
+- current conclusion
+- current model
+- current state
+- current framing
+- current uncertainties
+
+## 14.2 Timeline / Evidence Layer
+Lower section should track:
+- important updates
+- dated changes
+- historical developments
+- evidence trail
+- decision evolution
+
+Purpose:
+- preserve current clarity without losing history
+- allow future reinterpretation
+- avoid mixing stale history into current understanding
+
+Use this pattern especially for:
+- major projects
+- evolving frameworks
+- recurring strategic questions
+- core themes
+
+Do NOT force this structure on every note.
+Use it selectively where it provides strong value.
+
+---
+
+# 15. Project and Archive Consolidation Rule
+
+Project tracking and cold-history abstractions should be written as summary notes in `/02_SUMMARY`, with source evidence linked back to `/00_RAW`.
+
+Rule:
+- preserve project continuity through summary updates and system log entries
+- keep retrieval centered on `master_index -> /02_SUMMARY`
+
+---
+
+# 17. Template Usage
+
+Templates are:
+- optional
+- minimal
+- assistive
+
+Rule:
+- do NOT require template usage before note capture
+- AI may infer or impose light structure later if useful
+- templates should reduce friction, not increase it
+
+---
+
+# 18. Folder Philosophy
+
+Folders should remain:
+- shallow
+- stable
+- human-readable
+
+Folders should provide:
+- coarse navigation
+- intuitive browsing
+
+Precision should live in:
+- metadata
+- summaries
+- synthesis pages
+- system log
+
+Rule:
+- do NOT overfit knowledge structure to folders
+- do NOT build a heavy MECE-only entity encyclopedia unless explicitly intended
+
+This system is not primarily:
+- a CRM
+- an entity directory
+- a rigid taxonomy engine
+
+It is primarily:
+- a hybrid thinking system
+- a project system
+- a long-term reflective knowledge system
+
+---
+
+# 19. System Guidance Behavior
+
+If the user asks:
+- “what can we do here?”
+- “how does this system work?”
+- “I’m lost”
+- “how should I use this?”
+
+then:
+- consult `/03_SYSTEM_GUIDE`
+- explain available actions
+- help recover usage patterns
+- give practical next-step suggestions
+
+---
+
+# 20. Recovery Principle
+
+Assume:
+- the user may forget the structure
+- the user’s habits may drift
+- the system may go unused for long periods
+- future agents may start without prior context
+
+Therefore the system must remain:
+- self-explanatory
+- bootable
+- recoverable
+- interpretable
+
+---
+
+# 21. Anti-Patterns (Must Avoid)
+
+Do NOT:
+- scan the entire vault by default
+- treat raw as long-term storage
+- reprocess already processed notes (unless explicitly using the reorganize_article skill)
+- duplicate summaries repeatedly
+- over-classify into fragile folders
+- force every note into a heavy entity hierarchy
+- leave important corrections trapped only in chat
+- leave valuable new knowledge unwritten back into the system
+
+---
+
+# 22. Long-Term Principle
+
+This system must remain:
+
+- evolving
+- layered
+- efficient
+- recoverable
+- reconstructible
+
+Indexes, summaries, and logs may be rebuilt.
+Original notes remain the ultimate source material.
+Distilled knowledge remains the long-term cognitive asset.
+
+---
+
+# 23. Final Rule
+
+Always prioritize:
+
+- clarity
+- continuity
+- efficiency
+- stability
+- recoverability
+- compounding knowledge value
+
+over:
+
+- perfection
+- over-structuring
+- rigid taxonomy
+- unnecessary complexity
+
+---
+
+## 下一篇
+[[capabilities.md]]
+
